@@ -13,16 +13,18 @@ import (
 )
 
 func main() {
-	season := flag.Int("season", 2024, "The NBA season in YY or YYYY format (e.g., '23' or '2023')")
-	startSeason := flag.Int("start", 2024, "Start of the range of seasons")
+	season := flag.Int("season", time.Now().Year(), "The NBA season in YY or YYYY format (e.g., '23' or '2023')")
+	startSeason := flag.Int("start", time.Now().Year(), "Start of the range of seasons")
 	endSeason := flag.Int("end", 0, "End of the range of seasons")
 	output := flag.String("output", "", "Output file location")
 
 	flag.Parse()
 
+	actualStart := util.MinInt(*startSeason, *season)
+
 	// Default end season to the current year if not provided
 	if *endSeason == 0 {
-		*endSeason = time.Now().Year()
+		*endSeason = actualStart
 	}
 
 	if *output == "" {
@@ -32,7 +34,6 @@ func main() {
 	}
 
 	util.PrintWarning("Warning: Due to Basketball Reference rate limits, only 20 requests can be made per second.")
-	actualStart := util.MinInt(*startSeason, *season)
 	totalSeasons := *endSeason - actualStart + 1
 	totalTimeSeconds := totalSeasons * 30 * 60 / 20
 	fmt.Printf("Estimated processing time: %d minutes and %d seconds.\n", totalTimeSeconds/60, totalTimeSeconds%60)
