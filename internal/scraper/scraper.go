@@ -25,7 +25,7 @@ func LoadTeamSeasonLog(team string, season int) (string, error) {
 		return "", fmt.Errorf("Failed to open page: %w", err)
 	}
 
-	err = page.WaitIdle(time.Microsecond)
+	err = page.WaitIdle(time.Second)
 	if err != nil {
 		return "", fmt.Errorf("Error waiting for page idle: %w", err)
 	}
