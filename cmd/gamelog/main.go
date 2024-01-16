@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/timsexperiments/nba-gamelog/internal/scraper"
 )
 
 func main() {
@@ -34,4 +36,10 @@ func main() {
 	}
 
 	fmt.Printf("Season: %s, Start: %s, End: %s, Output: %s\n", *season, *startSeason, *endSeason, *output)
+
+	contents, err := scraper.LoadTeamSeasonLog("ATL", 2024)
+	if err != nil {
+		log.Fatalf("There was an issue getting the gamelog from Basketball Reference: %s", err)
+	}
+	fmt.Println(contents)
 }
