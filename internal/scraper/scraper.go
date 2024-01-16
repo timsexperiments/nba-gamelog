@@ -13,7 +13,7 @@ const shareButtonSelector = "#tgl_basic_sh > div > ul > li.hasmore > div > ul > 
 func LoadTeamSeasonLog(team string, season int) (string, error) {
 	url := fmt.Sprintf("https://www.basketball-reference.com/teams/%s/%d/gamelog", team, season)
 
-	browser := rod.New().Timeout(time.Second * 3)
+	browser := rod.New().Timeout(time.Second * 5)
 	err := browser.Connect()
 	if err != nil {
 		return "", fmt.Errorf("Failed to connect browser: %w", err)
