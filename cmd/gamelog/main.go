@@ -41,11 +41,13 @@ func main() {
 	fmt.Printf("Creating Gamelog")
 	go util.LoadingAnimation(done, "Creating Gamelog")
 
+	startTime := time.Now()
 	gamelogs, err := gamelog.SeasonsGamelog(actualStart, *endSeason)
+	timeToComplete := time.Since(startTime)
 	done <- true
 	if err != nil {
 		log.Fatalf("There was an issue getting the gamelog from Basketball Reference: %s", err)
 	}
 	util.WriteCSV(gamelogs, *output)
-	fmt.Printf("\nSuccessfully created gamelog at %s.\n", *output)
+	fmt.Printf("\nSuccessfully created gamelog at %s in %v.\n", *output, timeToComplete)
 }
