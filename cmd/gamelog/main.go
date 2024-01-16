@@ -41,5 +41,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("There was an issue getting the gamelog from Basketball Reference: %s", err)
 	}
-	fmt.Println(gamelogs)
+	util.WriteCSV(gamelogs, *output)
+	fmt.Printf("\nSuccessfully created gamelog at %s.\n", *output)
 }
