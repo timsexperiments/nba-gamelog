@@ -45,3 +45,20 @@ var TEAMS = []string{
 	POR, SAC, SAS,
 	TOR, UTA, WAS,
 }
+
+func ToTeamDisplay(team string) string {
+	switch team {
+	case "CHO":
+		return "CHA"
+	case "NJN":
+		return "BKN"
+	case "SEA":
+		return "OKC"
+	case "NOH":
+		return "NOP"
+	case "VAN":
+		return "MEM"
+	default:
+		return team
+	}
+}

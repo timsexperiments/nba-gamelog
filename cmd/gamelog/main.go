@@ -8,25 +8,21 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/timsexperiments/nba-gamelog/internal/scraper"
+	"github.com/timsexperiments/nba-gamelog/internal/gamelog"
+	"github.com/timsexperiments/nba-gamelog/internal/util"
 )
 
 func main() {
-	season := flag.String("season", "", "The NBA season in YY or YYYY format (e.g., '23' or '2023')")
-	startSeason := flag.String("start", "", "Start of the range of seasons")
-	endSeason := flag.String("end", "", "End of the range of seasons")
+	season := flag.Int("season", 2024, "The NBA season in YY or YYYY format (e.g., '23' or '2023')")
+	startSeason := flag.Int("start", 2024, "Start of the range of seasons")
+	endSeason := flag.Int("end", 0, "End of the range of seasons")
 	output := flag.String("output", "", "Output file location")
 
 	flag.Parse()
 
 	// Default end season to the current year if not provided
-	currentYear := time.Now().Year()
-	if *endSeason == "" {
-		*endSeason = fmt.Sprintf("%d", currentYear)
-	}
-
-	if *season == "" && *startSeason == "" {
-		log.Fatalf("Error: You must specify either a single season or a start season.")
+	if *endSeason == 0 {
+		*endSeason = time.Now().Year()
 	}
 
 	if *output == "" {
@@ -35,11 +31,15 @@ func main() {
 		output = &defaultOutput
 	}
 
-	fmt.Printf("Season: %s, Start: %s, End: %s, Output: %s\n", *season, *startSeason, *endSeason, *output)
+	util.PrintWarning("Warning: Due to Basketball Reference rate limits, only 20 requests can be made per second.")
+	actualStart := util.MinInt(*startSeason, *season)
+	totalSeasons := *endSeason - actualStart + 1
+	totalTimeSeconds := totalSeasons * 30 * 60 / 20
+	fmt.Printf("Estimated processing time: %d minutes and %d seconds.\n", totalTimeSeconds/60, totalTimeSeconds%60)
 
-	contents, err := scraper.LoadTeamSeasonLog("ATL", 2024)
+	gamelogs, err := gamelog.SeasonsGamelog(actualStart, *endSeason)
 	if err != nil {
 		log.Fatalf("There was an issue getting the gamelog from Basketball Reference: %s", err)
 	}
-	fmt.Println(contents)
+	fmt.Println(gamelogs)
 }
