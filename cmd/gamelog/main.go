@@ -37,7 +37,12 @@ func main() {
 	totalTimeSeconds := totalSeasons * 30 * 60 / 20
 	fmt.Printf("Estimated processing time: %d minutes and %d seconds.\n", totalTimeSeconds/60, totalTimeSeconds%60)
 
+	done := make(chan bool)
+	fmt.Printf("Creating Gamelog")
+	go util.LoadingAnimation(done, "Creating Gamelog")
+
 	gamelogs, err := gamelog.SeasonsGamelog(actualStart, *endSeason)
+	done <- true
 	if err != nil {
 		log.Fatalf("There was an issue getting the gamelog from Basketball Reference: %s", err)
 	}

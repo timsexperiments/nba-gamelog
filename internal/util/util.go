@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"time"
 )
 
 func MinInt(a, b int) int {
@@ -37,4 +38,22 @@ func PrintWarning(message string) {
 	const reset = "\033[0m"
 
 	fmt.Printf("%s%s%s\n", yellow, message, reset)
+}
+
+func LoadingAnimation(done chan bool, loadingText string) {
+	for {
+		select {
+		case <-done:
+			fmt.Printf("\r%50s\r", " ") // Clear the line with enough spaces
+			return
+		default:
+			fmt.Printf("\r%s", loadingText) // Print the static text
+			time.Sleep(750 * time.Millisecond)
+			for i := 0; i < 3; i++ {
+				fmt.Print(".")
+				time.Sleep(750 * time.Millisecond)
+			}
+			fmt.Printf("\r%50s\r", " ") // Clear the line after printing dots
+		}
+	}
 }
