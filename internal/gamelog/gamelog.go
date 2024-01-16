@@ -32,7 +32,7 @@ func SeasonsGamelog(start, end int) ([][]string, error) {
 
 	callsLeftInLimit := brLimitPerMinute
 	for season := end; season >= start; season-- {
-		for _, team := range constants.TEAMS {
+		for i, team := range constants.TEAMS {
 			callsLeftInLimit--
 			if team == constants.BKN && season < 2013 {
 				team = "NJN"
@@ -54,7 +54,7 @@ func SeasonsGamelog(start, end int) ([][]string, error) {
 				return nil, err
 			}
 			allContents = append(allContents, seasonGamelog...)
-			if callsLeftInLimit == 0 {
+			if callsLeftInLimit == 0 && (season != end || i != len(constants.TEAMS)-1) {
 				callsLeftInLimit = brLimitPerMinute
 				time.Sleep(time.Minute)
 			}
