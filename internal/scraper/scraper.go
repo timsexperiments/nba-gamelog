@@ -22,12 +22,12 @@ func LoadTeamSeasonLog(team string, season int) (string, error) {
 
 	page, err := browser.Page(proto.TargetCreateTarget{URL: url})
 	if err != nil {
-		return "", fmt.Errorf("Failed to open page: %w", err)
+		return "", fmt.Errorf("Failed to open %s %d gamelog page: %w", team, season, err)
 	}
 
 	err = page.WaitIdle(time.Second)
 	if err != nil {
-		return "", fmt.Errorf("Error waiting for page idle: %w", err)
+		return "", fmt.Errorf("Error waiting for %s %d gamelog idle: %w", team, season, err)
 	}
 
 	// Button is hidden on the page so custom JavaScript needs to be used to
@@ -56,17 +56,17 @@ func LoadTeamSeasonLog(team string, season int) (string, error) {
 		});
 	}`, shareButtonSelector)})
 	if err != nil {
-		return "", fmt.Errorf("error executing script: %w", err)
+		return "", fmt.Errorf("Error executing script on %s %d gamelog: %w", team, season, err)
 	}
 
 	el, err := page.Element("#csv_tgl_basic")
 	if err != nil {
-		return "", fmt.Errorf("failed to find element: %w", err)
+		return "", fmt.Errorf("Failed to find %s %d gamelog table: %w", team, season, err)
 	}
 
 	content, err := el.Text()
 	if err != nil {
-		return "", fmt.Errorf("error getting text: %w", err)
+		return "", fmt.Errorf("Error getting %s %d gamelog csv: %w", team, season, err)
 	}
 
 	return content, nil
