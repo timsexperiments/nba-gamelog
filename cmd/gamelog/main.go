@@ -23,7 +23,7 @@ func main() {
 	actualStart := util.MinInt(*startSeason, *season)
 	actualEnd := util.MinInt(*endSeason, *season)
 
-	util.PrintWarning("Warning: Due to Basketball Reference rate limits, only 20 requests can be made per second.")
+	util.PrintWarning("Warning: Due to Basketball Reference rate limits, only 20 requests can be made per minute.")
 	totalSeasons := actualEnd - actualStart + 1
 	totalTimeSeconds := totalSeasons * 30 * 60 / 20
 	fmt.Printf("Estimated processing time: %d minutes and %d seconds.\n", totalTimeSeconds/60, totalTimeSeconds%60)
