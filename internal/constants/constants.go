@@ -1,5 +1,7 @@
 package constants
 
+const DefaultFileName = "nba_gamelog.csv"
+
 const (
 	ATL string = "ATL"
 	BOS        = "BOS"

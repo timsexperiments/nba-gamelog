@@ -53,7 +53,7 @@ func LoadingAnimation(done chan bool, loadingText string) {
 				fmt.Print(".")
 				time.Sleep(750 * time.Millisecond)
 			}
-			fmt.Printf("\r%50s\r", " ") // Clear the line after printing dots
+			fmt.Printf("\r%80s\r", " ") // Clear the line after printing dots
 		}
 	}
 }

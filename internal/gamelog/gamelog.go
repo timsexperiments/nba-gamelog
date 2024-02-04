@@ -2,11 +2,13 @@ package gamelog
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/timsexperiments/nba-gamelog/internal/constants"
 	"github.com/timsexperiments/nba-gamelog/internal/scraper"
+	"github.com/timsexperiments/nba-gamelog/internal/util"
 )
 
 const brLimitPerMinute = 20
@@ -28,38 +30,68 @@ var headers = []string{
 	"opp_pf",
 }
 
-func SeasonsGamelog(start, end int) ([][]string, error) {
+func SeasonsGamelog(start, end int, folder string, writeAll bool) ([][]string, error) {
 	allContents := make([][]string, 0)
 
 	callsLeftInLimit := brLimitPerMinute
 	for season := end; season >= start; season-- {
+		currentSeasonLog := make([][]string, 0)
 		for i, team := range constants.TEAMS {
 			callsLeftInLimit--
-			if team == constants.BKN && season < 2013 {
+			ogTeam := team
+			if ogTeam == constants.BKN && season < 2013 {
 				team = "NJN"
 			}
-			if team == constants.OKC && season < 2009 {
+			if ogTeam == constants.OKC && season < 2009 {
 				team = "SEA"
 			}
-			if team == constants.NOP && season < 2013 {
+			if ogTeam == constants.NOP && season < 2003 {
+				continue
+			}
+			if ogTeam == constants.NOP && (season == 2006 || season == 2007) {
+				team = "NOK"
+			}
+			if ogTeam == constants.NOP && season < 2014 {
 				team = "NOH"
 			}
-			if team == constants.MEM && season < 2002 {
+			if ogTeam == constants.NOP && season < 2003 {
+				team = "CHH"
+			}
+			if ogTeam == constants.MEM && season < 2002 {
 				team = "VAN"
 			}
-			if team == constants.CHA && season < 2013 {
+			if ogTeam == constants.CHA && season < 2005 {
+				continue
+			}
+			if ogTeam == constants.CHA && season < 2015 {
 				team = "CHA"
 			}
+
 			seasonGamelog, err := seasonLog(team, season)
+			for try := 0; try < 2; try++ {
+				if err != nil {
+					seasonGamelog, err = seasonLog(team, season)
+					callsLeftInLimit--
+				}
+			}
 			if err != nil {
 				return nil, err
 			}
-			allContents = append(allContents, transformSeasonGamelog(seasonGamelog)...)
+
+			currentSeasonLog = append(currentSeasonLog, transformSeasonGamelog(seasonGamelog)...)
 			if callsLeftInLimit == 0 && (season != end || i != len(constants.TEAMS)-1) {
 				callsLeftInLimit = brLimitPerMinute
 				time.Sleep(time.Minute)
 			}
 		}
+		if writeAll {
+			writeFile := fmt.Sprintf("%s/%d_%s", folder, season, constants.DefaultFileName)
+			if err := util.WriteCSV(append([][]string{headers}, currentSeasonLog...), writeFile); err != nil {
+				fmt.Fprintf(os.Stderr, "Unable to write file %s.\n", err)
+			}
+		}
+
+		allContents = append(allContents, currentSeasonLog...)
 	}
 
 	return append([][]string{headers}, allContents...), nil
